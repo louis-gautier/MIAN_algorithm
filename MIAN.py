@@ -44,6 +44,22 @@ class MIAN:
                     self.incinf[w][v] = Delta
         return self.S
     
+    def AP(self, v, t):
+        if t == 0:
+            return int(v in self.S)
+        if v in self.S:
+            return 0
+        prob_unactivated_earlier = np.product([1 - sum([self.AP(edge[1], i)*self.G.get_edge_data(*edge)["weight"] 
+                                                  for i in range(max(0,t-2))])
+                                               for edge in self.G.edges(v)])
+        prob_unactivated_by_now = np.product([1 - sum([self.AP(edge[1], i)*self.G.get_edge_data(*edge)["weight"] 
+                                                    for i in range(t-1)])
+                                           for edge in self.G.edges(v)])
+        return prob_unactivated_earlier - prob_unactivated_by_now
+    
+    def PAP(self, v):
+        return sum([self.AP(v,t)*self.q**(t+1) for t in range(self.k+1)])
+
     def MIIA(self, v):
         arb = set()
         for u in self.G.nodes:
