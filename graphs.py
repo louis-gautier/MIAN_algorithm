@@ -47,12 +47,12 @@ def random_walk_subgraph(G, target_num_nodes, directed=True, max_iters=1e6):
 
 if __name__ == '__main__':
     
-    directed = False # Set directed to True or False based on your graph
+    directed = True # Set directed to True or False based on your graph
     create_as = nx.DiGraph if directed else nx.Graph
     n = 100 if directed else 250
-    G = nx.read_edgelist('soc-Epinions1.txt.gz', create_using=create_as)
-    # G = nx.fast_gnp_random_graph(75877, 0.0002, seed=1, directed=directed)
-    # G, directed = nx.barabasi_albert_graph(75877, 7, seed=1), False
+    # G = nx.read_edgelist('soc-Epinions1.txt.gz', create_using=create_as) # Random subgraph of Epinions
+    G = nx.fast_gnp_random_graph(75877, 0.0002, seed=1, directed=directed) # Random graph
+    # G = nx.barabasi_albert_graph(75877, 7, seed=1) # BA graph
 
     # Generate the subgraph using random walk
     subgraph = random_walk_subgraph(G, n, directed=directed)  
