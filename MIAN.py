@@ -15,7 +15,7 @@ class MIAN:
         self.actual = {v: 0 for v in G.nodes}
         self.MIIAs = {}
         self.MIOAs = {}
-        self.incinf_matrix = {{} for v in G.nodes}
+        self.incinf_matrix = {v: {} for v in G.nodes}
         self.incinf_vector = {}
         for v in G.nodes:
             MIIA =  self.MIIA(v)
@@ -28,11 +28,11 @@ class MIAN:
                 dist, path = self.shortest_path(u, v, restriction=self.MIIAs[u])
                 pap = dist*self.q if len(path) > 0 else 0
                 self.incinf_matrix[v][u] = pap
-            self.incinf_vector[v] = np.sum(self.incinf_matrix[v].values())
+            self.incinf_vector[v] = np.sum(list(self.incinf_matrix[v].values()))
 
     def run(self):
         for i in range(self.k):
-            u = max(self.incinf_vector, key=self.incinf_vector.get)
+            u = max(self.incinf_vector, key=lambda x: self.incinf_vector[x])
             self.S.add(u)
             for v in self.MIOAs[u]:
                 self.actual[v] += self.incinf_matrix[u][v]
@@ -43,22 +43,9 @@ class MIAN:
                     self.incinf_vector[w][v] = Delta
         return self.S
     
-    # def AP(self, v, t, arb):
-    #     if t == 0:
-    #         return int(v in self.S)
-    #     if v in self.S:
-    #         return 0
-    #     prob_unactivated_earlier = np.product([1 - sum([self.AP(edge[1], i)*arb.get_edge_data(*edge)["weight"]
-    #                                                     for i in range(max(0,t-2))])
-    #                                            for edge in arb.edges(v)])
-    #     prob_unactivated_by_now = np.product([1 - sum([self.AP(edge[1], i)*arb.get_edge_data(*edge)["weight"]
-    #                                                    for i in range(t-1)])
-    #                                        for edge in arb.edges(v)])
-    #     return prob_unactivated_earlier - prob_unactivated_by_now
-    
     def PAP(self, v, w, arb):
-        S_tent = self.S + {w}
-        h = nx.dag_longest_path_length(arb, source=v)
+        S_tent = self.S | {w}
+        h = nx.dag_longest_path_length(arb)
         n = arb.number_of_nodes()
         AP_matrix = np.zeros((n, h))
         u_in_S_mask = np.array([v in S_tent for v in arb.nodes])
