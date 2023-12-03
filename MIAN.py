@@ -5,6 +5,7 @@ import numpy as np
 
 class MIAN:
     def __init__(self, G, q, k, theta):
+        print("Initializing MIAN")
         self.G = G
         self.q = q
         self.k = k
@@ -17,12 +18,14 @@ class MIAN:
         self.MIOAs = {}
         self.incinf_matrix = {v: {} for v in G.nodes}
         self.incinf_vector = {}
+        print("Computing initial MIIA and MIOA")
         for v in G.nodes:
             MIIA =  self.MIIA(v)
             MIOA = self.MIOA(v)
             self.MIIAs[v] = MIIA
             self.MIOAs[v] = MIOA
         # Compute paps
+        print("Computing initial PAP")
         for v in G.nodes:
             for u in self.MIOAs[v]:
                 dist, path = self.shortest_path(u, v, restriction=self.MIIAs[u])
@@ -32,23 +35,28 @@ class MIAN:
 
     def run(self):
         for i in range(self.k):
+            print(f"Adding {i}th seed node")
             u = max(self.incinf_vector, key=lambda x: self.incinf_vector[x])
             self.S.add(u)
+            print("Updating all PAPs")
             for v in self.MIOAs[u]:
                 self.actual[v] += self.incinf_matrix[u][v]
+                print(f"Computing PAP for {v}")
                 for w in self.MIIAs[v]:
                     papv = self.PAP(v, w, self.MIIAs[v])
                     Delta = papv - self.actual[v]
                     self.incinf_vector[w] += Delta - self.incinf_matrix[w][v]
-                    self.incinf_vector[w][v] = Delta
+                    self.incinf_matrix[w][v] = Delta
         return self.S
     
     def PAP(self, v, w, arb):
+        nmap = {u: i for i, u in enumerate(arb.nodes)} # new mapping of nodes in arb
+        rmap = {i: u for u, i in nmap.items()} # reverse mapping of nodes
         S_tent = self.S | {w}
         h = nx.dag_longest_path_length(arb)
         n = arb.number_of_nodes()
         AP_matrix = np.zeros((n, h))
-        u_in_S_mask = np.array([v in S_tent for v in arb.nodes])
+        u_in_S_mask = np.array([rmap[i] in S_tent for i in range(n)])
         AP_matrix[u_in_S_mask,0] = 1
         AP_matrix[u_in_S_mask,1:] = 0
         AP_matrix[~u_in_S_mask,0] = 0
@@ -57,24 +65,28 @@ class MIAN:
                 if u in S_tent:
                     continue
                 if t > 1:
-                    prob_activated_earlier = np.product([1 - sum([AP_matrix[edge[1], i]*arb.get_edge_data((w, u))["weight"]
-                                                                  for i in range(t-2)])
-                                                         for edge in arb.edges(v)])
+                    prob_activated_earlier = np.product([1 - sum([AP_matrix[nmap[w], j]*self.G.get_edge_data(w, u)["weight"]
+                                                                  for j in range(t-2)])
+                                                         for w in arb.predecessors(u)])
                 else:
                     prob_activated_earlier = 0
-                prob_unactivated_by_now = np.product([1 - sum([AP_matrix[w, i]*arb.get_edge_data((w, u))["weight"]
-                                                               for i in range(t-2)])
+                prob_unactivated_by_now = np.product([1 - sum([AP_matrix[nmap[w], j]*self.G.get_edge_data(w, u)["weight"]
+                                                               for j in range(t-1)])
                                                       for w in arb.predecessors(u)])
-                AP_matrix[u, t] = prob_activated_earlier - prob_unactivated_by_now
+                AP_matrix[nmap[w], t] = prob_activated_earlier - prob_unactivated_by_now
 
-        return sum([AP_matrix[v,t]*self.q**(t+1) for t in range(h)])
+        return sum([AP_matrix[nmap[w],t]*self.q**(t+1) for t in range(h)])
 
     def MIIA(self, v):
         arb = nx.DiGraph()
+        arb.add_node(v)
         for u in self.G.nodes:
             ppp, new_nodes = self.shortest_path(u,v)
             if ppp >= self.theta:
                 nx.add_path(arb, new_nodes)
+                # for i, j in zip(new_nodes, new_nodes[1:]):
+                #     if not arb.has_edge(i, j):
+                #         arb.add_edge(i, j, weight=G.get_edge_data(w, u)["weight"])
         return arb
     
     def MIOA(self, v):
@@ -83,6 +95,9 @@ class MIAN:
             ppp, new_nodes = self.shortest_path(v,u)
             if ppp >= self.theta:
                 nx.add_path(arb, new_nodes)
+                # for i, j in zip(new_nodes, new_nodes[1:]):
+                #     if not arb.has_edge(i, j):
+                #         arb.add_edge(i, j, weight=self.G[u][v]['weight'])
         return arb
     
     
