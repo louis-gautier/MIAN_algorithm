@@ -75,7 +75,7 @@ class MIAN:
                                                       for w in arb.predecessors(u)])
                 AP_matrix[nmap[w], t] = prob_activated_earlier - prob_unactivated_by_now
 
-        return sum([AP_matrix[nmap[w],t]*self.q**(t+1) for t in range(h)])
+        return sum([AP_matrix[nmap[v],t]*self.q**(t+1) for t in range(h)])
 
     def MIIA(self, v):
         arb = nx.DiGraph()
@@ -84,9 +84,6 @@ class MIAN:
             ppp, new_nodes = self.shortest_path(u,v)
             if ppp >= self.theta:
                 nx.add_path(arb, new_nodes)
-                # for i, j in zip(new_nodes, new_nodes[1:]):
-                #     if not arb.has_edge(i, j):
-                #         arb.add_edge(i, j, weight=G.get_edge_data(w, u)["weight"])
         return arb
     
     def MIOA(self, v):
@@ -95,9 +92,6 @@ class MIAN:
             ppp, new_nodes = self.shortest_path(v,u)
             if ppp >= self.theta:
                 nx.add_path(arb, new_nodes)
-                # for i, j in zip(new_nodes, new_nodes[1:]):
-                #     if not arb.has_edge(i, j):
-                #         arb.add_edge(i, j, weight=self.G[u][v]['weight'])
         return arb
     
     
