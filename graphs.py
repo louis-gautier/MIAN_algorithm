@@ -33,6 +33,7 @@ def random_walk_subgraph(G, target_num_nodes, directed=True, max_iters=1e6):
             else:
               # Restart at randomly sampled node from the full graph
               current_node = random.choice(list(G.nodes()))
+              subgraph_nodes = set([current_node])
         else:
             current_node = random.choice(neighbors)
             subgraph_nodes.add(current_node)
