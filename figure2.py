@@ -38,10 +38,10 @@ if __name__ == "__main__":
     if run_algorithms:
         for q in qs:
             if algorithm == "MIAN":
-                alg = MIAN(graph, q, kmax, theta)
+                alg = MIAN(graph, q, kmax, theta, "results/"+graph_name+"_MIAN_k"+str(kmax)+"_q"+str(q)+".txt")
                 optimal_seeds[q] = alg.run()
             else:
-                alg = Greedy(kmax, lambda S: estimate_PIS(graph, S, q), graph)
+                alg = Greedy(kmax, lambda S: estimate_PIS(graph, S, q), graph, "results/"+graph_name+"_greedy_k"+str(kmax)+"_q"+str(q)+".txt")
                 optimal_seeds[q] = alg.run()
 
     PIS_df = pd.DataFrame(columns=['q', 'k', 'PIS'])

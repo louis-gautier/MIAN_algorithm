@@ -4,12 +4,13 @@ import numpy as np
 
 
 class MIAN:
-    def __init__(self, G, q, k, theta):
+    def __init__(self, G, q, k, theta, results_file):
         print("Initializing MIAN")
         self.G = G
         self.q = q
         self.k = k
         self.theta = theta
+        self.results_file = results_file
 
         # Initialization from the pseudo algorithm
         self.S = set()
@@ -37,6 +38,8 @@ class MIAN:
         for i in range(self.k):
             print(f"Adding {i}th seed node")
             u = max(self.incinf_vector, key=lambda x: self.incinf_vector[x])
+            with open(self.results_file, 'a') as results_file:
+                results_file.write(str(u)+'\n')
             self.S.add(u)
             print("Updating all PAPs")
             for v in self.MIOAs[u]:

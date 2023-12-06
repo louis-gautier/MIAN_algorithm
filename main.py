@@ -18,7 +18,7 @@ if __name__ == "__main__":
     graph = get_graph(graph_name)
     if algorithm == "MIAN":
         theta = 1/160 # from the paper
-        alg = MIAN(graph, q, k, theta)
+        alg = MIAN(graph, q, k, theta, "results/"+graph_name+"_MIAN_k"+str(k)+"_q"+str(q)+".txt")
         optimal_seed_set = alg.run()
         print(optimal_seed_set)
     else:

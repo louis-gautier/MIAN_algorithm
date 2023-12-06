@@ -36,9 +36,9 @@ if __name__ == "__main__":
 
     if run_algorithms:
         for q in qs:
-            mian = MIAN(graph, q, kmax, theta)
+            mian = MIAN(graph, q, kmax, theta, "results/"+graph_name+"_MIAN_k"+str(kmax)+"_q"+str(q)+".txt")
             optimal_seeds_MIAN[q] = mian.run()
-            greedy = Greedy(kmax, lambda S: estimate_PIS(graph, S, q), graph)
+            greedy = Greedy(kmax, lambda S: estimate_PIS(graph, S, q), graph, "results/"+graph_name+"_greedy_k"+str(kmax)+"_q"+str(q)+".txt")
             optimal_seeds_greedy[q] = greedy.run()
 
     PIS_df = pd.DataFrame(columns=['alg', 'q', 'k', 'PIS'])
