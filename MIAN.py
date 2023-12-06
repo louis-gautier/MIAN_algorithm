@@ -64,7 +64,7 @@ class MIAN:
     def run(self):
         for i in range(self.k):
             print(f"Adding {i}th seed node")
-            u = max(self.incinf_vector, key=lambda x: self.incinf_vector[x])
+            u = max(self.incinf_vector, key=lambda x: self.incinf_vector[x] if x not in self.S else -np.inf)
             with open(self.results_file, 'a') as results_file:
                 results_file.write(str(u)+'\n')
             self.S.add(int(u))
