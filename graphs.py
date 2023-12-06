@@ -16,11 +16,10 @@ def print_graph_info(G):
     print("Average out-degree:", sum(dict(G.out_degree).values()) / len(G.nodes))
 
 def random_walk_subgraph(G, target_num_nodes, directed=True, max_iters=1e6):
-    random.seed(1)
+    random.seed(3)
     # Choose a random starting node
     start_node = random.choice(list(G.nodes()))
 
-    
     # Perform random walk
     current_node = start_node
     subgraph_nodes = set([current_node])
@@ -48,7 +47,7 @@ def random_walk_subgraph(G, target_num_nodes, directed=True, max_iters=1e6):
     return subgraph
 
 def get_graph(graph_name):
-    n = 200
+    n = 1000
     if graph_name == "erdos_renyi":
         p = 0.3
         #G = nx.fast_gnp_random_graph(75877, 0.0002, seed=1, directed=True) # Random graph

@@ -33,7 +33,7 @@ class MIAN:
             custom_graph[source][target]["weight"] = -np.log(self.G.get_edge_data(source, target)["weight"]*q)
         print("Computing all shortest paths")
         all_shortest_paths = dict(nx.all_pairs_shortest_path(custom_graph))
-        print("Finished computing all shortest paths")
+        # print("Finished computing all shortest paths")
         self.pairwise_paths = {int(u): {int(v): [] for v in G.nodes} for u in G.nodes}
         self.pairwise_distances = {int(u): {int(v): 0 for v in G.nodes} for u in G.nodes}
         print("Initialized paths and distance dictionaries")
