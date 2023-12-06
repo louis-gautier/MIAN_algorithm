@@ -15,6 +15,8 @@ class MIAN:
         self.k = k
         self.theta = theta
         self.results_file = results_file
+        with open(self.results_file, "w") as f:
+            pass
 
         # Initialization from the pseudo algorithm
         self.S = set()

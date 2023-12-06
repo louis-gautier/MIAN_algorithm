@@ -2,12 +2,21 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Figure 2",
+            "name": "epinions_subgraph",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/figure2.py",
             "console": "integratedTerminal",
             "args": ["epinions_subgraph", "MIAN"],
+            "justMyCode": true
+        },
+        {
+            "name": "hept",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/figure2.py",
+            "console": "integratedTerminal",
+            "args": ["hept", "MIAN"],
             "justMyCode": true
         }
     ]

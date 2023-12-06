@@ -21,7 +21,7 @@ if __name__ == "__main__":
 
     graph_name = sys.argv[1]
     algorithm = sys.argv[2]
-    assert(graph_name in ["erdos_renyi", "barabasi_albert", "epinions_subgraph", "epinions"])
+    assert(graph_name in ["erdos_renyi", "barabasi_albert", "epinions_subgraph", "epinions", "wiki_vote", "wiki_vote_subgraph", "hept", "hept_subgraph"])
     assert(algorithm in ["MIAN", "greedy"])
 
     # Constants
