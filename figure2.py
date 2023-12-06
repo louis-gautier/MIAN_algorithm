@@ -25,7 +25,7 @@ if __name__ == "__main__":
     assert(algorithm in ["MIAN", "greedy"])
 
     # Constants
-    theta = 0.05 # from the MIAN paper
+    theta = 0.3 # from the MIAN paper
     run_algorithms = True
 
     graph = get_graph(graph_name)

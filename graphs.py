@@ -16,9 +16,10 @@ def print_graph_info(G):
     print("Average out-degree:", sum(dict(G.out_degree).values()) / len(G.nodes))
 
 def random_walk_subgraph(G, target_num_nodes, directed=True, max_iters=1e6):
-    random.seed(42)
+    random.seed(1)
     # Choose a random starting node
     start_node = random.choice(list(G.nodes()))
+
     
     # Perform random walk
     current_node = start_node
@@ -56,9 +57,17 @@ def get_graph(graph_name):
         G = nx.barabasi_albert_graph(75877, 7, seed=1, create_using=nx.DiGraph) # BA graph
         for edge in G.edges():
             G[edge[0]][edge[1]]['weight'] = np.random.uniform(0, 1)
-    else:
+    elif 'epinions' in graph_name:
         G = nx.read_edgelist('soc-Epinions1.txt.gz', create_using=nx.DiGraph)
         if graph_name == "epinions_subgraph":
+            G = random_walk_subgraph(G, n, directed=True)
+    elif 'wiki_vote' in graph_name:
+        G = nx.read_edgelist('wiki-Vote.txt.gz', create_using=nx.DiGraph)
+        if graph_name == "wiki_vote_subgraph":
+            G = random_walk_subgraph(G, n, directed=True)
+    elif 'hept' in graph_name:
+        G = nx.read_edgelist('ca-HepTh.txt.gz', create_using=nx.DiGraph)
+        if graph_name == "hept_subgraph":
             G = random_walk_subgraph(G, n, directed=True)
     for edge in G.edges():
         G[edge[0]][edge[1]]['weight'] = np.random.uniform(0, 1)

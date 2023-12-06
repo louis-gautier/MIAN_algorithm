@@ -18,12 +18,32 @@ class MIAN:
 
         # Initialization from the pseudo algorithm
         self.S = set()
-        self.actual = {v: 0 for v in G.nodes}
+        self.actual = {int(v): 0 for v in G.nodes}
         self.MIIAs = {}
         self.MIOAs = {}
-        self.incinf_matrix = {v: {} for v in G.nodes}
+        self.incinf_matrix = {int(v): {} for v in G.nodes}
         self.incinf_vector = {}
         self.hs = {}
+        
+        custom_graph = G.copy()
+        for edge in G.edges():
+            source, target = edge
+            custom_graph[source][target]["weight"] = -np.log(self.G.get_edge_data(source, target)["weight"]*q)
+        print("Computing all shortest paths")
+        all_shortest_paths = dict(nx.all_pairs_shortest_path(custom_graph))
+        print("Finished computing all shortest paths")
+        self.pairwise_paths = {int(u): {int(v): [] for v in G.nodes} for u in G.nodes}
+        self.pairwise_distances = {int(u): {int(v): 0 for v in G.nodes} for u in G.nodes}
+        for u in G.nodes:
+            for v in G.nodes:
+                try:
+                    path = all_shortest_paths[u][v]
+                    self.pairwise_paths[int(u)][int(v)] = path
+                    self.pairwise_distances[int(u)][int(v)] = np.exp(-sum([self.G.get_edge_data(path[i], path[i+1])["weight"] for i in range(len(path)-1)]))
+                except KeyError:
+                    self.pairwise_paths[int(u)][int(v)] = []
+                    self.pairwise_distances[int(u)][int(v)] = np.inf
+
         print("Computing initial MIIA and MIOA")
         for v in G.nodes:
             MIIA = self.MIIA(v)
@@ -34,11 +54,10 @@ class MIAN:
         # Compute paps
         print("Computing initial PAP")
         for v in G.nodes:
-            for u in self.MIOAs[v]:
-                dist, path = self.shortest_path(u, v, restriction=self.MIIAs[u])
-                pap = dist*self.q if len(path) > 0 else 0
-                self.incinf_matrix[v][u] = pap
-            self.incinf_vector[v] = np.sum(list(self.incinf_matrix[v].values()))
+            for u in self.MIOAs[int(v)]:
+                pap = self.pairwise_distances[int(u)][int(v)]*self.q if len(path) > 0 else 0
+                self.incinf_matrix[int(v)][int(u)] = pap
+            self.incinf_vector[int(v)] = np.sum(list(self.incinf_matrix[int(v)].values()))
 
     def run(self):
         for i in range(self.k):
@@ -46,33 +65,33 @@ class MIAN:
             u = max(self.incinf_vector, key=lambda x: self.incinf_vector[x])
             with open(self.results_file, 'a') as results_file:
                 results_file.write(str(u)+'\n')
-            self.S.add(u)
+            self.S.add(int(u))
             print("Updating all PAPs")
-            for v in self.MIOAs[u]:
-                self.actual[v] += self.incinf_matrix[u][v]
-                #print(f"Computing PAP for {v}")
-                for w in self.MIIAs[v]:
-                    papv = self.PAP(v, w, self.MIIAs[v])
-                    Delta = papv - self.actual[v]
-                    self.incinf_vector[w] += Delta - self.incinf_matrix[w][v]
-                    self.incinf_matrix[w][v] = Delta
+            for i, v in enumerate(self.MIOAs[int(u)]):
+                self.actual[int(v)] += self.incinf_matrix[int(u)][int(v)]
+                print(f"Computing PAPs for {i}th node")
+                for w in self.MIIAs[int(v)]:
+                    papv = self.PAP(v, w, self.MIIAs[int(v)])
+                    Delta = papv - self.actual[int(v)]
+                    self.incinf_vector[int(w)] += Delta - self.incinf_matrix[int(w)][int(v)]
+                    self.incinf_matrix[int(w)][int(v)] = Delta
         return self.S
     
     def PAP(self, v, w, arb):
         nmap = {u: i for i, u in enumerate(arb.nodes)} # new mapping of nodes in arb
         rmap = {i: u for u, i in nmap.items()} # reverse mapping of nodes
-        S_tent = self.S | {w}
+        S_tent = self.S | {int(w)}
         # h = nx.dag_longest_path_length(arb) # Can be optimized
         h = self.hs[int(v)]
         n = arb.number_of_nodes()
         AP_matrix = np.zeros((n, h))
-        u_in_S_mask = np.array([rmap[i] in S_tent for i in range(n)])
+        u_in_S_mask = np.array([int(rmap[i]) in S_tent for i in range(n)])
         AP_matrix[u_in_S_mask,0] = 1
         AP_matrix[u_in_S_mask,1:] = 0
         AP_matrix[~u_in_S_mask,0] = 0
         for t in range(1, h):
             for u in arb.nodes:
-                if u in S_tent:
+                if int(u) in S_tent:
                     continue
                 if t > 1:
                     prob_activated_earlier = np.product([1 - sum([AP_matrix[nmap[w], j]*self.G.get_edge_data(w, u)["weight"]
@@ -91,7 +110,8 @@ class MIAN:
         arb = nx.DiGraph()
         arb.add_node(v)
         for u in self.G.nodes:
-            ppp, new_nodes = self.shortest_path(u,v)
+            new_nodes = self.pairwise_paths[int(u)][int(v)]
+            ppp = self.pairwise_distances[int(u)][int(v)]
             if ppp >= self.theta:
                 nx.add_path(arb, new_nodes)
         h = nx.dag_longest_path_length(arb)
@@ -100,11 +120,11 @@ class MIAN:
     def MIOA(self, v):
         arb = nx.DiGraph()
         for u in self.G.nodes:
-            ppp, new_nodes = self.shortest_path(v,u)
+            new_nodes = self.pairwise_paths[int(v)][int(u)]
+            ppp = self.pairwise_distances[int(v)][int(u)]
             if ppp >= self.theta:
                 nx.add_path(arb, new_nodes)
         return arb
-    
     
     def shortest_path(self, start, end, restriction=None):
         shortest_distance = {}
