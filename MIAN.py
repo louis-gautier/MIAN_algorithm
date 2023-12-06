@@ -59,10 +59,11 @@ class MIAN:
         # Compute paps
         print("Computing initial PAP")
         for v in G.nodes:
-            all_shortest_paths = dict(nx.all_pairs_shortest_path(self.MIOAs[int(v)]))
+            # all_shortest_paths = dict(nx.all_pairs_shortest_path(self.MIOAs[int(v)]))
             for u in self.MIOAs[int(v)]:
-                path = all_shortest_paths[v][u]
-                pap = np.product([G.get_edge_data(path[i], path[i+1])["weight"] for i in range(len(path)-1)])*(self.q**(len(path)+1)) if len(path) > 0 else 0
+                # path = all_shortest_paths[v][u]
+                # pap = np.product([G.get_edge_data(path[i], path[i+1])["weight"] for i in range(len(path)-1)])*(self.q**(len(path)+1)) if len(path) > 0 else 0
+                pap = self.pairwise_distances[int(u)][int(v)]*self.q if len(path) > 0 else 0
                 self.incinf_matrix[int(v)][int(u)] = pap
             self.incinf_vector[int(v)] = np.sum(list(self.incinf_matrix[int(v)].values()))
 
@@ -101,12 +102,12 @@ class MIAN:
                 if int(u) in S_tent:
                     continue
                 if t > 1:
-                    prob_activated_earlier = np.product([1 - sum([AP_matrix[nmap[w], j]*self.G.get_edge_data(w, u)["weight"]
+                    prob_activated_earlier = np.product([1 - sum([AP_matrix[nmap[w], j]*arb.get_edge_data(w, u)["weight"]
                                                                   for j in range(t-2)])
                                                          for w in arb.predecessors(u)])
                 else:
                     prob_activated_earlier = 0
-                prob_unactivated_by_now = np.product([1 - sum([AP_matrix[nmap[w], j]*self.G.get_edge_data(w, u)["weight"]
+                prob_unactivated_by_now = np.product([1 - sum([AP_matrix[nmap[w], j]*arb.get_edge_data(w, u)["weight"]
                                                                for j in range(t-1)])
                                                       for w in arb.predecessors(u)])
                 AP_matrix[nmap[w], t] = prob_activated_earlier - prob_unactivated_by_now
@@ -119,8 +120,9 @@ class MIAN:
             new_nodes = self.pairwise_paths[int(u)][int(v)]
             ppp = self.pairwise_distances[int(u)][int(v)]
             if ppp >= self.theta:
-                nx.add_path(arb, new_nodes)
-        h = nx.dag_longest_path_length(arb)
+                # nx.add_path(arb, new_nodes)
+                arb.add_weighted_edges_from([(new_nodes[i], new_nodes[i+1], self.G.get_edge_data(new_nodes[i], new_nodes[i+1])["weight"]) for i in range(len(new_nodes)-1)])
+        h = nx.dag_longest_path_length(arb, weight=None)
         return arb, h
     
     def MIOA(self, v):
@@ -130,7 +132,8 @@ class MIAN:
             ppp = self.pairwise_distances[int(v)][int(u)]
             #print(ppp)
             if ppp >= self.theta:
-                nx.add_path(arb, new_nodes)
+                # nx.add_path(arb, new_nodes)
+                arb.add_weighted_edges_from([(new_nodes[i], new_nodes[i+1], self.G.get_edge_data(new_nodes[i], new_nodes[i+1])["weight"]) for i in range(len(new_nodes)-1)])
         return arb
     
     def shortest_path(self, start, end, restriction=None):
