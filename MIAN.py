@@ -59,8 +59,10 @@ class MIAN:
         # Compute paps
         print("Computing initial PAP")
         for v in G.nodes:
+            all_shortest_paths = dict(nx.all_pairs_shortest_path(self.MIOAs[int(v)]))
             for u in self.MIOAs[int(v)]:
-                pap = self.pairwise_distances[int(u)][int(v)]*self.q if len(path) > 0 else 0
+                path = all_shortest_paths[v][u]
+                pap = np.product([G.get_edge_data(path[i], path[i+1])["weight"] for i in range(len(path)-1)])*(self.q**(len(path)+1)) if len(path) > 0 else 0
                 self.incinf_matrix[int(v)][int(u)] = pap
             self.incinf_vector[int(v)] = np.sum(list(self.incinf_matrix[int(v)].values()))
 
