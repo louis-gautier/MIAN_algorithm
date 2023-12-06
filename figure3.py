@@ -26,13 +26,12 @@ if __name__ == "__main__":
     theta = 1/160 # from the MIAN paper
     run_algorithms = True
 
-    np.random.seed(42)
     graph = get_graph(graph_name)
     qs = [0.7, 0.9]
     ks = list(range(0,51,5))
     kmax = max(ks)
-    optimal_seeds_MIAN = {qs: [] for q in qs}
-    optimal_seeds_greedy = {qs: [] for q in qs}
+    optimal_seeds_MIAN = {q: [] for q in qs}
+    optimal_seeds_greedy = {q: [] for q in qs}
 
     if run_algorithms:
         for q in qs:

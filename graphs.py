@@ -16,24 +16,25 @@ def print_graph_info(G):
     print("Average out-degree:", sum(dict(G.out_degree).values()) / len(G.nodes))
 
 def random_walk_subgraph(G, target_num_nodes, directed=True, max_iters=1e6):
+    random.seed(42)
     # Choose a random starting node
     start_node = random.choice(list(G.nodes()))
-
+    
     # Perform random walk
     current_node = start_node
     subgraph_nodes = set([current_node])
 
     iters = 0
     while len(subgraph_nodes) < target_num_nodes and iters < max_iters:
-        neighbors = list(G.successors(current_node)) if directed else list(G.neighbors(current_node))
+        neighbors = sorted(list(G.successors(current_node))) if directed else sorted(list(G.neighbors(current_node)))
         if not neighbors:
             if len(subgraph_nodes) < 10:
                 # Restart at randomly sampled node from the full graph
-                current_node = random.choice(list(G.nodes()))
+                current_node = random.choice(sorted(list(G.nodes())))
                 subgraph_nodes = set([current_node])
             else:
                 # Restart at another randomly sampled node within the current subgraph
-                current_node = random.choice(list(subgraph_nodes))
+                current_node = random.choice(sorted(list(subgraph_nodes)))
         else:
             current_node = random.choice(neighbors)
             subgraph_nodes.add(current_node)
@@ -41,7 +42,6 @@ def random_walk_subgraph(G, target_num_nodes, directed=True, max_iters=1e6):
         iters += 1
         if iters == max_iters:
             print("Reached max iterations")
-
     # Create the subgraph
     subgraph = G.subgraph(subgraph_nodes)
     return subgraph

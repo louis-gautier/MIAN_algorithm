@@ -41,10 +41,10 @@ class MIAN:
             with open(self.results_file, 'a') as results_file:
                 results_file.write(str(u)+'\n')
             self.S.add(u)
-            print("Updating all PAPs")
+            #print("Updating all PAPs")
             for v in self.MIOAs[u]:
                 self.actual[v] += self.incinf_matrix[u][v]
-                print(f"Computing PAP for {v}")
+                #print(f"Computing PAP for {v}")
                 for w in self.MIIAs[v]:
                     papv = self.PAP(v, w, self.MIIAs[v])
                     Delta = papv - self.actual[v]
