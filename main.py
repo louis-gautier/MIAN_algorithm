@@ -12,7 +12,7 @@ if __name__ == "__main__":
     algorithm = sys.argv[2]
     k = int(sys.argv[3])
     q = float(sys.argv[4])
-    assert(graph_name in ["erdos_renyi", "barabasi_albert", "epinions_subgraph", "epinions"])
+    assert(graph_name in ["erdos_renyi", "barabasi_albert", "epinions_subgraph", "epinions", "wiki_vote", "wiki_vote_subgraph", "hept", "hept_subgraph"])
     assert(algorithm in ["MIAN", "greedy"])
 
     graph = get_graph(graph_name)
