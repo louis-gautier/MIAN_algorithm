@@ -45,7 +45,7 @@ class MIAN:
                     self.pairwise_distances[int(u)][int(v)] = np.exp(-np.sum([custom_graph.get_edge_data(path[i], path[i+1])["weight"] for i in range(len(path)-1)]))
                 except KeyError:
                     self.pairwise_paths[int(u)][int(v)] = []
-                    self.pairwise_distances[int(u)][int(v)] = np.inf
+                    self.pairwise_distances[int(u)][int(v)] = 0 # np.inf
 
         print("Computing initial MIIA and MIOA")
         for v in G.nodes:
@@ -102,12 +102,12 @@ class MIAN:
                 if int(u) in S_tent:
                     continue
                 if t > 1:
-                    prob_activated_earlier = np.product([1 - sum([AP_matrix[nmap[w], j]*arb.get_edge_data(w, u)["weight"]
+                    prob_activated_earlier = np.product([1 - sum([AP_matrix[nmap[w], j]*self.G.get_edge_data(w, u)["weight"]
                                                                   for j in range(t-2)])
                                                          for w in arb.predecessors(u)])
                 else:
                     prob_activated_earlier = 0
-                prob_unactivated_by_now = np.product([1 - sum([AP_matrix[nmap[w], j]*arb.get_edge_data(w, u)["weight"]
+                prob_unactivated_by_now = np.product([1 - sum([AP_matrix[nmap[w], j]*self.G.get_edge_data(w, u)["weight"]
                                                                for j in range(t-1)])
                                                       for w in arb.predecessors(u)])
                 AP_matrix[nmap[w], t] = prob_activated_earlier - prob_unactivated_by_now
@@ -120,8 +120,8 @@ class MIAN:
             new_nodes = self.pairwise_paths[int(u)][int(v)]
             ppp = self.pairwise_distances[int(u)][int(v)]
             if ppp >= self.theta:
-                # nx.add_path(arb, new_nodes)
-                arb.add_weighted_edges_from([(new_nodes[i], new_nodes[i+1], self.G.get_edge_data(new_nodes[i], new_nodes[i+1])["weight"]) for i in range(len(new_nodes)-1)])
+                nx.add_path(arb, new_nodes)
+                # arb.add_weighted_edges_from([(new_nodes[i], new_nodes[i+1], self.G.get_edge_data(new_nodes[i], new_nodes[i+1])["weight"]) for i in range(len(new_nodes)-1)])
         h = nx.dag_longest_path_length(arb, weight=None)
         return arb, h
     
@@ -132,8 +132,8 @@ class MIAN:
             ppp = self.pairwise_distances[int(v)][int(u)]
             #print(ppp)
             if ppp >= self.theta:
-                # nx.add_path(arb, new_nodes)
-                arb.add_weighted_edges_from([(new_nodes[i], new_nodes[i+1], self.G.get_edge_data(new_nodes[i], new_nodes[i+1])["weight"]) for i in range(len(new_nodes)-1)])
+                nx.add_path(arb, new_nodes)
+                # arb.add_weighted_edges_from([(new_nodes[i], new_nodes[i+1], self.G.get_edge_data(new_nodes[i], new_nodes[i+1])["weight"]) for i in range(len(new_nodes)-1)])
         return arb
     
     def shortest_path(self, start, end, restriction=None):
