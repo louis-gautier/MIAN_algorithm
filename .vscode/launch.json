@@ -1,0 +1,14 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Figure 2",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/figure2.py",
+            "console": "integratedTerminal",
+            "args": ["epinions_subgraph", "MIAN"],
+            "justMyCode": true
+        }
+    ]
+}

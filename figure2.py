@@ -25,11 +25,12 @@ if __name__ == "__main__":
     assert(algorithm in ["MIAN", "greedy"])
 
     # Constants
-    theta = 1/160 # from the MIAN paper
+    theta = 0.05 # from the MIAN paper
     run_algorithms = True
 
     graph = get_graph(graph_name)
-    qs = [0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+    #qs = [0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+    qs = [0.9]
     ks = [1, 10, 20, 30, 40, 50]
     kmax = max(ks)
     optimal_seeds = {q: [] for q in qs}

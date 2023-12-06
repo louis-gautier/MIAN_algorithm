@@ -1,10 +1,14 @@
 import heapq
 import networkx as nx
 import numpy as np
-
+import time
 
 class MIAN:
     def __init__(self, G, q, k, theta, results_file):
+        # nmap = {u: i for i, u in enumerate(G.nodes)} # new mapping of nodes to integers
+        # # print(G.nodes)
+        # self.G = nx.relabel_nodes(G, nmap) # Make sure labels are standardized for array indexing
+        # nx.convert_node_labels_to_integers
         print("Initializing MIAN")
         self.G = G
         self.q = q
@@ -19,12 +23,14 @@ class MIAN:
         self.MIOAs = {}
         self.incinf_matrix = {v: {} for v in G.nodes}
         self.incinf_vector = {}
+        self.hs = {}
         print("Computing initial MIIA and MIOA")
         for v in G.nodes:
-            MIIA =  self.MIIA(v)
+            MIIA = self.MIIA(v)
             MIOA = self.MIOA(v)
-            self.MIIAs[v] = MIIA
-            self.MIOAs[v] = MIOA
+            self.MIIAs[int(v)], h = MIIA
+            self.hs[int(v)] = h
+            self.MIOAs[int(v)] = MIOA
         # Compute paps
         print("Computing initial PAP")
         for v in G.nodes:
@@ -41,7 +47,7 @@ class MIAN:
             with open(self.results_file, 'a') as results_file:
                 results_file.write(str(u)+'\n')
             self.S.add(u)
-            #print("Updating all PAPs")
+            print("Updating all PAPs")
             for v in self.MIOAs[u]:
                 self.actual[v] += self.incinf_matrix[u][v]
                 #print(f"Computing PAP for {v}")
@@ -56,7 +62,8 @@ class MIAN:
         nmap = {u: i for i, u in enumerate(arb.nodes)} # new mapping of nodes in arb
         rmap = {i: u for u, i in nmap.items()} # reverse mapping of nodes
         S_tent = self.S | {w}
-        h = nx.dag_longest_path_length(arb)
+        # h = nx.dag_longest_path_length(arb) # Can be optimized
+        h = self.hs[int(v)]
         n = arb.number_of_nodes()
         AP_matrix = np.zeros((n, h))
         u_in_S_mask = np.array([rmap[i] in S_tent for i in range(n)])
@@ -77,7 +84,7 @@ class MIAN:
                                                                for j in range(t-1)])
                                                       for w in arb.predecessors(u)])
                 AP_matrix[nmap[w], t] = prob_activated_earlier - prob_unactivated_by_now
-
+        t3 = time.time()
         return sum([AP_matrix[nmap[v],t]*self.q**(t+1) for t in range(h)])
 
     def MIIA(self, v):
@@ -87,7 +94,8 @@ class MIAN:
             ppp, new_nodes = self.shortest_path(u,v)
             if ppp >= self.theta:
                 nx.add_path(arb, new_nodes)
-        return arb
+        h = nx.dag_longest_path_length(arb)
+        return arb, h
     
     def MIOA(self, v):
         arb = nx.DiGraph()
@@ -115,12 +123,12 @@ class MIAN:
                 while node:
                     path.append(node)
                     node = predecessor[node]
-                return distance, path[::-1]
+                return np.exp(-distance), path[::-1]
             else:
                 for edge in self.G.edges(node):
                     if restriction is not None and edge[1] not in restriction:
                         continue
-                    dist = self.q * self.G.get_edge_data(*edge)["weight"]
+                    dist = -np.log(self.q * self.G.get_edge_data(*edge)["weight"])
                     heapq.heappush(heap, (distance + dist, edge[1], node))
         else:
             return np.inf, []
