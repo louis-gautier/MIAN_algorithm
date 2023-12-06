@@ -1,6 +1,5 @@
 import sys
 from graphs import get_graph
-from figures import plot_figures
 import networkx as nx
 from MIAN import MIAN
 
@@ -21,6 +20,6 @@ if __name__ == "__main__":
         theta = 1/160 # from the paper
         alg = MIAN(graph, q, k, theta)
         optimal_seed_set = alg.run()
-        plot_figures(optimal_seed_set)
+        print(optimal_seed_set)
     else:
         raise NotImplementedError

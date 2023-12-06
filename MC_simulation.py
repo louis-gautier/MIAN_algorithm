@@ -48,6 +48,9 @@ class ICN:
         print(f"neutral nodes: {np.sum(self.state == 0)}")
         print(f"negative nodes: {np.sum(self.state == -1)}")
 
+    def positive_influence_spread(self):
+        return np.sum(self.state==1)
+
 if __name__ == '__main__':
     G = get_graph("epinions_subgraph")
     S = set(np.random.choice(G.nodes, size=3, replace=False))
