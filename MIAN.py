@@ -36,12 +36,13 @@ class MIAN:
         print("Finished computing all shortest paths")
         self.pairwise_paths = {int(u): {int(v): [] for v in G.nodes} for u in G.nodes}
         self.pairwise_distances = {int(u): {int(v): 0 for v in G.nodes} for u in G.nodes}
+        print("Initialized paths and distance dictionaries")
         for u in G.nodes:
             for v in G.nodes:
                 try:
                     path = all_shortest_paths[u][v]
                     self.pairwise_paths[int(u)][int(v)] = path
-                    self.pairwise_distances[int(u)][int(v)] = np.exp(-sum([self.G.get_edge_data(path[i], path[i+1])["weight"] for i in range(len(path)-1)]))
+                    self.pairwise_distances[int(u)][int(v)] = np.exp(-np.sum([custom_graph.get_edge_data(path[i], path[i+1])["weight"] for i in range(len(path)-1)]))
                 except KeyError:
                     self.pairwise_paths[int(u)][int(v)] = []
                     self.pairwise_distances[int(u)][int(v)] = np.inf
@@ -107,7 +108,6 @@ class MIAN:
                                                                for j in range(t-1)])
                                                       for w in arb.predecessors(u)])
                 AP_matrix[nmap[w], t] = prob_activated_earlier - prob_unactivated_by_now
-        t3 = time.time()
         return sum([AP_matrix[nmap[v],t]*self.q**(t+1) for t in range(h)])
 
     def MIIA(self, v):
@@ -126,6 +126,7 @@ class MIAN:
         for u in self.G.nodes:
             new_nodes = self.pairwise_paths[int(v)][int(u)]
             ppp = self.pairwise_distances[int(v)][int(u)]
+            #print(ppp)
             if ppp >= self.theta:
                 nx.add_path(arb, new_nodes)
         return arb
