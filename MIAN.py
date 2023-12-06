@@ -53,6 +53,8 @@ class MIAN:
             self.MIIAs[int(v)], h = MIIA
             self.hs[int(v)] = h
             self.MIOAs[int(v)] = MIOA
+        
+        # print(f'Skipped {len([1 for u in self.G.nodes for v in self.G.nodes if self.pairwise_distances[int(u)][int(v)] < self.theta])} ppps')
         # Compute paps
         print("Computing initial PAP")
         for v in G.nodes:
@@ -64,14 +66,14 @@ class MIAN:
     def run(self):
         for i in range(self.k):
             print(f"Adding {i}th seed node")
-            u = max(self.incinf_vector, key=lambda x: self.incinf_vector[x] if x not in self.S else -np.inf)
+            u = max([v for v in self.incinf_vector if v not in self.S], key=lambda x: self.incinf_vector[x])
             with open(self.results_file, 'a') as results_file:
                 results_file.write(str(u)+'\n')
             self.S.add(int(u))
             print("Updating all PAPs")
             for i, v in enumerate(self.MIOAs[int(u)]):
                 self.actual[int(v)] += self.incinf_matrix[int(u)][int(v)]
-                print(f"Computing PAPs for {i}th node")
+                # print(f"Computing PAPs for {i}th node")
                 for w in self.MIIAs[int(v)]:
                     papv = self.PAP(v, w, self.MIIAs[int(v)])
                     Delta = papv - self.actual[int(v)]
