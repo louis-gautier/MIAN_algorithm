@@ -40,12 +40,12 @@ class ICN:
             self.S = Snew
     
     def print_state(self):
-        print(f"positive nodes: {np.sum(self.state.values() == 1)}")
-        print(f"neutral nodes: {np.sum(self.state.values() == 0)}")
-        print(f"negative nodes: {np.sum(self.state.values() == -1)}")
+        print(f"positive nodes: {np.sum(np.array(list(self.state.values())) == 1)}")
+        print(f"neutral nodes: {np.sum(np.array(list(self.state.values())) == 0)}")
+        print(f"negative nodes: {np.sum(np.array(list(self.state.values())) == -1)}")
 
     def positive_influence_spread(self):
-        return np.sum(self.state.values()==1)
+        return np.sum(np.array(list(self.state.values()))==1)
 
 if __name__ == '__main__':
     G = get_graph("epinions_subgraph")
