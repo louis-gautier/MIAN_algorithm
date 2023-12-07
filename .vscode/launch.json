@@ -11,16 +11,16 @@
             "justMyCode": true
         },
         {
-            "name": "hept",
+            "name": "hept_subgraph",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/figure2_run.py",
+            "program": "${workspaceFolder}/figure3_run.py",
             "console": "integratedTerminal",
-            "args": ["hept", "MIAN"],
+            "args": ["hept_subgraph"],
             "justMyCode": true
         },
         {
-            "name": "epinions_subgraph_fig2",
+            "name": "epinions_subgraph_fig2_plot",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/figure2_plot.py",
