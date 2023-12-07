@@ -2,6 +2,7 @@ import heapq
 import networkx as nx
 import numpy as np
 import time
+import sys
 
 class MIAN:
     def __init__(self, G, q, k, theta, results_file):
@@ -48,6 +49,7 @@ class MIAN:
             self.MIIAs[int(v)], h = MIIA
             self.hs[int(v)] = h
             self.MIOAs[int(v)] = MIOA
+        # print(sorted(MIIA_cards)[::-1])
         
         # Compute paps
         print("Computing initial PAP")
@@ -58,15 +60,23 @@ class MIAN:
             self.incinf_vector[int(v)] = np.sum(list(self.incinf_matrix[int(v)].values()))
 
     def run(self):
+        n_i = self.k
         for i in range(self.k):
-            print(f"Adding {i}th seed node")
+            # print(f"Adding {i}th seed node")
             u = max([v for v in self.incinf_vector.keys() if v not in self.S], key=lambda x: self.incinf_vector[x])
             assert (str(u) in self.G.nodes)
             with open(self.results_file, 'a') as results_file:
                 results_file.write(str(u)+'\n')
             self.S.add(int(u))
-            print("Updating all PAPs")
+            # print("Updating all PAPs")
+            p_i = (i + 1) / n_i
+            n_j = len(self.MIOAs[int(u)])
             for j, v in enumerate(self.MIOAs[int(u)]):
+                p_j = (j + 1) / n_j
+                sys.stdout.write('\r')
+                sys.stdout.write("k: [%-20s] %d%%" % ('='*int(20*p_i), 100*p_i))
+                sys.stdout.write(" | v: [%-20s] %d%%" % ('='*int(20*p_j), 100*p_j))
+                sys.stdout.flush()
                 self.actual[int(v)] += self.incinf_matrix[int(u)][int(v)]
                 # print(f"Computing PAPs for {i}th node")
                 for w in self.MIIAs[int(v)]:
