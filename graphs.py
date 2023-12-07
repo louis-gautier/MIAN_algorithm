@@ -47,7 +47,7 @@ def random_walk_subgraph(G, target_num_nodes, directed=True, max_iters=1e6):
     return subgraph
 
 def get_graph(graph_name):
-    n = 1000
+    n = 200
     if graph_name == "erdos_renyi":
         p = 0.3
         #G = nx.fast_gnp_random_graph(75877, 0.0002, seed=1, directed=True) # Random graph
