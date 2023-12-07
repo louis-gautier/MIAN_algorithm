@@ -88,12 +88,12 @@ class MIAN:
                 if int(u) in S_tent:
                     continue
                 if t > 1:
-                    prob_activated_earlier = np.product([1 - sum([AP_matrix[nmap[w], j]*arb.get_edge_data(w, u)["weight"]
+                    prob_activated_earlier = np.product([1 - sum([AP_matrix[nmap[w], j]*self.G.get_edge_data(w, u)["weight"]
                                                                   for j in range(t-2)])
                                                          for w in arb.predecessors(u)])
                 else:
                     prob_activated_earlier = 0
-                prob_unactivated_by_now = np.product([1 - sum([AP_matrix[nmap[w], j]*arb.get_edge_data(w, u)["weight"]
+                prob_unactivated_by_now = np.product([1 - sum([AP_matrix[nmap[w], j]*self.G.get_edge_data(w, u)["weight"]
                                                                for j in range(t-1)])
                                                       for w in arb.predecessors(u)])
                 AP_matrix[nmap[w], t] = prob_activated_earlier - prob_unactivated_by_now
