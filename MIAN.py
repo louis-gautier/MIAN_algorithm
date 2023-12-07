@@ -38,9 +38,13 @@ class MIAN:
                     self.all_shortest_paths[u][0][v] = np.exp(-self.all_shortest_paths[u][0][v])
 
         print("Computing initial MIIA and MIOA")
+        MIIA_cards = []
+        MIOA_cards = []
         for v in G.nodes:
             MIIA = self.MIIA(v)
             MIOA = self.MIOA(v)
+            MIIA_cards.append(len(MIIA[0].nodes))
+            MIOA_cards.append(len(MIOA.nodes))
             self.MIIAs[int(v)], h = MIIA
             self.hs[int(v)] = h
             self.MIOAs[int(v)] = MIOA
@@ -62,7 +66,7 @@ class MIAN:
                 results_file.write(str(u)+'\n')
             self.S.add(int(u))
             print("Updating all PAPs")
-            for i, v in enumerate(self.MIOAs[int(u)]):
+            for j, v in enumerate(self.MIOAs[int(u)]):
                 self.actual[int(v)] += self.incinf_matrix[int(u)][int(v)]
                 # print(f"Computing PAPs for {i}th node")
                 for w in self.MIIAs[int(v)]:
