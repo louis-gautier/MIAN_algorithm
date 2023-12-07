@@ -20,19 +20,20 @@ if __name__ == "__main__":
         sys.exit(1)
 
     graph_name = sys.argv[1]
-    assert(graph_name in ["erdos_renyi", "barabasi_albert", "epinions_subgraph", "epinions"])
+    assert(graph_name in ["erdos_renyi", "barabasi_albert", "epinions_subgraph", "epinions", "wiki_vote", "wiki_vote_subgraph", "hept", "hept_subgraph"])
 
     # Constants
-    theta = 1/160 # from the MIAN paper
+    theta = 0.1 # from the MIAN paper
+    n=1000
 
-    graph = get_graph(graph_name)
+    graph = get_graph(graph_name,n)
     qs = [0.7, 0.9]
     kmax = 50
     optimal_seeds_MIAN = {q: [] for q in qs}
     optimal_seeds_greedy = {q: [] for q in qs}
 
     for q in qs:
-        #mian = MIAN(graph, q, kmax, theta, "results/"+graph_name+"_MIAN_k"+str(kmax)+"_q"+str(q)+".txt")
-        #optimal_seeds_MIAN[q] = mian.run()
+        mian = MIAN(graph, q, kmax, theta, "results/"+graph_name+"_MIAN_k"+str(kmax)+"_q"+str(q)+".txt")
+        optimal_seeds_MIAN[q] = mian.run()
         greedy = Greedy(graph, kmax, lambda S: estimate_PIS(graph, S, q), "results/"+graph_name+"_greedy_k"+str(kmax)+"_q"+str(q)+".txt")
         optimal_seeds_greedy[q] = greedy.run()
