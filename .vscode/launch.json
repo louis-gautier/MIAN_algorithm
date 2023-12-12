@@ -2,16 +2,16 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "epinions_subgraph",
+            "name": "figure2_run",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/figure2_run.py",
             "console": "integratedTerminal",
-            "args": ["epinions_subgraph", "MIAN"],
+            "args": ["hept_subgraph", "MIAN"],
             "justMyCode": true
         },
         {
-            "name": "hept_subgraph",
+            "name": "figure3_run",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/figure3_run.py",
@@ -29,12 +29,12 @@
             "justMyCode": true
         },
         {
-            "name": "epinions_subgraph_fig3_plot",
+            "name": "fig3_plot",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/figure3_plot.py",
             "console": "integratedTerminal",
-            "args": ["epinions_subgraph"],
+            "args": ["hept_subgraph"],
             "justMyCode": true
         },
         {

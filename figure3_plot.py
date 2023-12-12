@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 from greedy import Greedy
 
-def estimate_PIS(g, S, q, M=100):
+def estimate_PIS(g, S, q, M=200):
     PIS_estimate = 0.0
     for i in range(M):
         PIS_estimate += ICN(g, S, q).positive_influence_spread()
@@ -20,12 +20,12 @@ if __name__ == "__main__":
         sys.exit(1)
 
     graph_name = sys.argv[1]
-    assert(graph_name in ["erdos_renyi", "barabasi_albert", "epinions_subgraph", "epinions"])
+    assert(graph_name in ["erdos_renyi", "barabasi_albert", "epinions_subgraph", "epinions", "hept_subgraph"])
 
-    graph = get_graph(graph_name)
+    graph = get_graph(graph_name, n=500)
     qs = [0.9]
     #ks = list(range(0,51,5))
-    ks = list(range(1,5))
+    ks = list(range(0,50))
     #kmax = max(ks)
     kmax = 50
 
@@ -37,8 +37,10 @@ if __name__ == "__main__":
             optimal_seeds_MIAN = file.read().splitlines()
         for k in ks:
             print("k=",k)
-            optimal_S_MIAN = optimal_seeds_MIAN[:k]
-            PIS_df.loc[len(PIS_df.index)] = ['MIAN', q, k, estimate_PIS(graph, optimal_S_MIAN, q)]
+            optimal_S_MIAN = set(optimal_seeds_MIAN[:k])
+            PIS_estimate = estimate_PIS(graph, optimal_S_MIAN, q)
+            PIS_df.loc[len(PIS_df.index)] = ['MIAN', q, k, PIS_estimate]
+            print(PIS_estimate)
             #optimal_S_greedy = optimal_seeds_greedy[q][:k]
             #PIS_df.loc[len(PIS_df.index)] = ['greedy', q, k, estimate_PIS(graph, optimal_S_greedy, q)]
 
