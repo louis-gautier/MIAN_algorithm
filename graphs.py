@@ -56,15 +56,15 @@ def get_graph(graph_name, n):
         for edge in G.edges():
             G[edge[0]][edge[1]]['weight'] = np.random.uniform(0, 1)
     elif 'epinions' in graph_name:
-        G = nx.read_edgelist('soc-Epinions1.txt.gz', create_using=nx.DiGraph)
+        G = nx.read_edgelist('data/soc-Epinions1.txt.gz', create_using=nx.DiGraph)
         if graph_name == "epinions_subgraph":
             G = random_walk_subgraph(G, n, directed=True)
     elif 'wiki_vote' in graph_name:
-        G = nx.read_edgelist('wiki-Vote.txt.gz', create_using=nx.DiGraph)
+        G = nx.read_edgelist('data/wiki-Vote.txt.gz', create_using=nx.DiGraph)
         if graph_name == "wiki_vote_subgraph":
             G = random_walk_subgraph(G, n, directed=True)
     elif 'hept' in graph_name:
-        G = nx.read_edgelist('ca-HepTh.txt.gz', create_using=nx.DiGraph)
+        G = nx.read_edgelist('data/ca-HepTh.txt.gz', create_using=nx.DiGraph)
         if graph_name == "hept_subgraph":
             G = random_walk_subgraph(G, n, directed=True)
     for edge in G.edges():
